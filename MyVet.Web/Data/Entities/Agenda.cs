@@ -43,7 +43,6 @@ namespace MyVet.Web.Data.Entities
         public bool IsAvailable { get; set; }
 
         public Owner Owner { get; set; }
-
         public Pet Pet { get; set; }
     }
 }
