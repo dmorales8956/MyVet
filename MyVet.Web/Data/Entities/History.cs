@@ -7,18 +7,6 @@ namespace MyVet.Web.Data.Entities
     {
         public int Id { get; set; }
 
-        private ServiceType serviceType;
-
-        public ServiceType GetServiceType()
-        {
-            return serviceType;
-        }
-
-        public void SetServiceType(ServiceType value)
-        {
-            serviceType = value;
-        }
-
         [Display(Name = "Description")]
         [MaxLength(100, ErrorMessage = "The {0} field can not have more than {1} characters.")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
@@ -37,6 +25,7 @@ namespace MyVet.Web.Data.Entities
         public DateTime DateLocal => Date.ToLocalTime();
 
         public ServiceType ServiceType { get; set; }
+
         public Pet Pet { get; set; }
     }
 }

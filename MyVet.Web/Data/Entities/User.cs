@@ -1,12 +1,10 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyVet.Web.Data.Entities
 {
-    public class Owner
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-
         [Display(Name = "Document")]
         [MaxLength(20, ErrorMessage = "The {0} field can not have more than {1} characters.")]
         [Required(ErrorMessage = "The field {0} is mandatory.")]
@@ -22,21 +20,13 @@ namespace MyVet.Web.Data.Entities
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         public string LastName { get; set; }
 
-        [Display(Name = "Fixed Phone")]
-        [MaxLength(20, ErrorMessage = "The {0} field can not have more than {1} characters.")]
-        public string FixedPhone { get; set; }
-
-        [Display(Name = "Cell Phone")]
-        [MaxLength(20, ErrorMessage = "The {0} field can not have more than {1} characters.")]
-        public string CellPhone { get; set; }
-
         [MaxLength(100, ErrorMessage = "The {0} field can not have more than {1} characters.")]
         public string Address { get; set; }
 
+        [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
 
+        [Display(Name = "Full Name")]
         public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
-
-        public User User { get; internal set; }
     }
 }
