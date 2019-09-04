@@ -162,6 +162,7 @@ namespace MyVet.Web.Controllers
 
                 if (model.ImageFile != null)
                 {
+
                     path = await _imageHelper.UploadImageAsync(model.ImageFile);
                 }
 
