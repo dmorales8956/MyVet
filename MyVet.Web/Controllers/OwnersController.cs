@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,14 +14,14 @@ using MyVet.Web.Models;
 
 namespace MyVet.Web.Controllers
 {
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles = "Admin")]
     public class OwnersController : Controller
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private readonly ICombosHelper _combosHelper;
 
-        public OwnersController(DataContext context,IUserHelper  userHelper,ICombosHelper combosHelper)
+        public OwnersController(DataContext context, IUserHelper userHelper, ICombosHelper combosHelper)
         {
             _context = context;
             _userHelper = userHelper;
@@ -32,7 +33,7 @@ namespace MyVet.Web.Controllers
         public IActionResult Index()
         {
             return View(_context.Owners
-                .Include(o=>o.User)
+                .Include(o => o.User)
                 .Include(o => o.Pets));
         }
 
@@ -47,7 +48,7 @@ namespace MyVet.Web.Controllers
             var owner = await _context.Owners
                  .Include(o => o.User)
                 .Include(o => o.Pets)
-                .ThenInclude(p=>p.PetType)
+                .ThenInclude(p => p.PetType)
                 .Include(o => o.Pets)
                 .ThenInclude(p => p.Histories)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -84,8 +85,8 @@ namespace MyVet.Web.Controllers
                 var response = await _userHelper.AddUserAsync(user, model.Password);
                 if (response.Succeeded)
                 {
-                  var  userInDB = await _userHelper.GetUserByEmailAsync(model.Username);
-                    await _userHelper.AddUserToRoleAsync(userInDB,"Customer");
+                    var userInDB = await _userHelper.GetUserByEmailAsync(model.Username);
+                    await _userHelper.AddUserToRoleAsync(userInDB, "Customer");
 
                     var owner = new Owner
                     {
@@ -103,14 +104,14 @@ namespace MyVet.Web.Controllers
                     catch (Exception ex)
                     {
 
-                        ModelState.AddModelError(string.Empty,ex.ToString());
+                        ModelState.AddModelError(string.Empty, ex.ToString());
                     }
-                   
+
                 }
                 ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
             }
             return View(model);
-           
+
         }
 
         // GET: Owners/Edit/5
@@ -205,7 +206,7 @@ namespace MyVet.Web.Controllers
             }
 
             var owner = await _context.Owners.FindAsync(id.Value);
-           
+
             if (owner == null)
             {
                 return NotFound();
@@ -213,14 +214,14 @@ namespace MyVet.Web.Controllers
 
             var model = new PetViewModel
             {
-              Born=DateTime.Today,
-              OwnerId=owner.Id,
-              PetTypes=_combosHelper.GetComboPetTypes()
+                Born = DateTime.Today,
+                OwnerId = owner.Id,
+                PetTypes = _combosHelper.GetComboPetTypes()
 
             };
             return View(model);
         }
 
-       
+
     }
 }
