@@ -42,27 +42,7 @@ namespace MyVet.Web.Controllers
                 .Include(o => o.Pets));
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var owner = await _dataContext.Owners
-                .Include(o => o.User)
-                .Include(o => o.Pets)
-                .ThenInclude(p => p.PetType)
-                .Include(o => o.Pets)
-                .ThenInclude(p => p.Histories)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (owner == null)
-            {
-                return NotFound();
-            }
-
-            return View(owner);
-        }
+        
 
         public IActionResult Create()
         {
@@ -217,6 +197,27 @@ namespace MyVet.Web.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var owner = await _dataContext.Owners
+                .Include(o => o.User)
+                .Include(o => o.Pets)
+                .ThenInclude(p => p.PetType)
+                .Include(o => o.Pets)
+                .ThenInclude(p => p.Histories)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            return View(owner);
+        }
         public async Task<IActionResult> DetailsPet(int? id)
         {
             if (id == null)
@@ -237,10 +238,64 @@ namespace MyVet.Web.Controllers
 
             return View(pet);
         }
+        public async Task<IActionResult> AddHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-      
+            var pet = await _dataContext.Pets.FindAsync(id.Value);
+            if (pet == null)
+            {
+                return NotFound();
+            }
 
-       
+            var model = new HistoryViewModel
+            {
+                Date = DateTime.Now,
+                PetId = pet.Id,
+                ServiceTypes = _combosHelper.GetComboServiceTypes(),
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddHistory(HistoryViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var history = await _converterHelper.ToHistoryAsync(model, true);
+                _dataContext.Histories.Add(history);
+                await _dataContext.SaveChangesAsync();
+                return RedirectToAction($"{nameof(DetailsPet)}/{model.PetId}");
+            }
+
+            model.ServiceTypes = _combosHelper.GetComboServiceTypes();
+            return View(model);
+        }
+
+        public async Task<IActionResult> EditHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var history = await _dataContext.Histories
+                .Include(h => h.Pet)
+                .Include(h => h.ServiceType)
+                .FirstOrDefaultAsync(p => p.Id == id.Value);
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            return View(_converterHelper.ToHistoryViewModel(history));
+        }
+
+
 
         public async Task<IActionResult> DeleteHistory(int? id)
         {

@@ -25,6 +25,7 @@ namespace MyVet.Web.Helpers
                 Agendas = model.Agendas,
                 Born = model.Born,
                 Histories = model.Histories,
+                Id = isNew ? 0 : model.Id,
                 ImageUrl = path,
                 Name = model.Name,
                 Owner = await _dataContext.Owners.FindAsync(model.OwnerId),
@@ -32,15 +33,9 @@ namespace MyVet.Web.Helpers
                 Race = model.Race,
                 Remarks = model.Remarks
             };
-            if (model.Id !=0)
-            {
-                pet.Id = model.Id;
-            }
 
             return pet;
         }
-
-
 
         public PetViewModel ToPetViewModel(Pet pet)
         {
@@ -62,5 +57,31 @@ namespace MyVet.Web.Helpers
             };
         }
 
+        public async Task<History> ToHistoryAsync(HistoryViewModel model, bool isNew)
+        {
+            return new History
+            {
+                Date = model.Date.ToUniversalTime(),
+                Description = model.Description,
+                Id = isNew ? 0 : model.Id,
+                Pet = await _dataContext.Pets.FindAsync(model.PetId),
+                Remarks = model.Remarks,
+                ServiceType = await _dataContext.ServiceTypes.FindAsync(model.ServiceTypeId)
+            };
+        }
+
+        public HistoryViewModel ToHistoryViewModel(History history)
+        {
+            return new HistoryViewModel
+            {
+                Date = history.Date,
+                Description = history.Description,
+                Id = history.Id,
+                PetId = history.Pet.Id,
+                Remarks = history.Remarks,
+                ServiceTypeId = history.ServiceType.Id,
+                ServiceTypes = _combosHelper.GetComboServiceTypes()
+            };
+        }
     }
 }
