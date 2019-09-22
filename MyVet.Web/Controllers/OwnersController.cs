@@ -197,6 +197,7 @@ namespace MyVet.Web.Controllers
             return View(model);
         }
 
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -238,7 +239,33 @@ namespace MyVet.Web.Controllers
 
             return View(pet);
         }
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var owner = await _dataContext.Owners
+                .Include(o => o.User)
+                .Include(o => o.Pets)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            if (owner.Pets.Count > 0)
+            {
+                //TODO: Message
+                return RedirectToAction(nameof(Index));
+            }
+
+            await _userHelper.DeleteUserAsync(owner.User.Email);
+            _dataContext.Owners.Remove(owner);
+            await _dataContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> DeletePet(int? id)
         {
             if (id == null)
